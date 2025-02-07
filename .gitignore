@@ -1,0 +1,6 @@
+.venv
+temp
+pptx
+.env
+.DS_Store
+__pycache__

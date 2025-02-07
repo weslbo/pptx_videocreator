@@ -1,0 +1,7 @@
+python-pptx
+requests
+BeautifulSoup
+markdownify
+openai
+dotenv
+moviepy
