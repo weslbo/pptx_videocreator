@@ -14,7 +14,7 @@ def is_url(text):
 
 
 def main():
-    pptx_input_file = "pptx/Presentation1.pptx"
+    pptx_input_file = "pptx/DP600-01-06.pptx"
     
     presentation = Presentation(pptx_input_file)
     for slide in presentation.slides:
@@ -29,6 +29,14 @@ def main():
                 markdown = downloadhelper.retrieve_markdown(url)
             else:
                 markdown = notes_text.strip()
+                       
+            background_color = slide.background.fill.fore_color.rgb if slide.background.fill.type == 1 else None
+            if background_color:
+                hex_color = f"#{background_color}FF"
+                print(f"Background color of slide {presentation.slides.index(slide) + 1}: {hex_color}")
+            else:
+                print(f"Slide {presentation.slides.index(slide) + 1} has no solid background color.")
+                hex_color = "#FFFFFFFF"
                 
             transcript = gpthelper.generate_transcript(markdown)
             ssml = gpthelper.generate_ssml(transcript)
@@ -36,9 +44,8 @@ def main():
             with open("./temp/ssml.xml", "w") as ssml_file:
                 ssml_file.write(ssml)
             
-            notes_slide.notes_text_frame.text = transcript + "\n\n\n\n\n\n\n\n\n\n" + ssml
-            presentation.save(pptx_input_file.replace(".pptx", "_video.pptx"))  ## Remove this
-            video = videohelper.generate_video(ssml, "#F4F3F5FF")
+            notes_slide.notes_text_frame.text = transcript
+            video = videohelper.generate_video(ssml, hex_color)
             pptxhelper.addvideo(slide, video)
 
     presentation.save(pptx_input_file.replace(".pptx", "_video.pptx"))        
